@@ -16,6 +16,7 @@
 
   <!-- Custom styles for this template -->
   <link rel="stylesheet" href="{% static 'bookmark/css/bookmark_style.css' %}" media="screen">
+  <script src="https://kit.fontawesome.com/7b90dc3916.js" crossorigin="anonymous"></script>
 
 </head>
 
@@ -84,6 +85,23 @@
 
         <!-- Post Content -->
         <p>{{ bookmark.url }}</p>
+        {% if bookmark.file_upload %}
+          <a href="{{ bookmark.file_upload.url }}" class="btn btn-outline-dark" role="button" download>
+            Download:
+            {% if bookmark.get_file_ext == 'csv' %}
+              <i class="fa-solid fa-file-csv"></i>
+            {% elif bookmark.get_file_ext == 'xlsx' or bookmark.get_file_ext == 'xls' %}
+              <i class="fa-solid fa-file-excel"></i>
+            {% elif bookmark.get_file_ext == 'docx' or bookmark.get_file_ext == 'doc' %}
+              <i class="fa-solid fa-file-word"></i>
+            {% else %}
+              <i class="fa-solid fa-file"></i>
+            {% endif %}
+            {{ bookmark.get_file_name }}
+          </a>
+        {% endif %}
+
+
         <hr>
 
         <!-- Comments Form -->

@@ -1,4 +1,6 @@
 from django.db import models
+import os
+
 
 # Create your models here.
 class Bookmark(models.Model):
@@ -15,3 +17,9 @@ class Bookmark(models.Model):
   
   def get_absolute_url(self):
     return f'/bookmark/{self.pk}/'
+  
+  def get_file_name(self):
+    return os.path.basename(self.file_upload.name)
+  
+  def get_file_ext(self):
+    return self.get_file_name().split('.')[-1]
