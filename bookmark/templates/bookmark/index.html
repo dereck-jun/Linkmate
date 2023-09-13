@@ -2,14 +2,14 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>BookMark</title>
+  <title>Bookmark</title>
 </head>
 <body>
-  <h1>My BookMark</h1>
+  <h1>My Bookmark</h1>
 
   {% for b in bookmarks %}
     <hr/>
-    <h2>{{ b.title }}</h2>
+    <h2><a href="{{ b.get_absolute_url }}">{{ b.title }}</a></h2>
     <h3>{{ b.url }}</h3>
     <h5>{{ b.created_at }}</h5>
   {% endfor %}
