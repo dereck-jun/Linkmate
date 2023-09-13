@@ -7,7 +7,7 @@
 <body>
   <h1>My Bookmark</h1>
 
-  {% for b in bookmarks %}
+  {% for b in bookmark_list %}
     <hr/>
     <h2><a href="{{ b.get_absolute_url }}">{{ b.title }}</a></h2>
     <h3>{{ b.url }}</h3>
