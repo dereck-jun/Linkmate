@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>BookMark</title>
+</head>
+<body>
+  <h1>My BookMark</h1>
+
+  {% for b in bookmarks %}
+    <hr/>
+    <h2>{{ b.title }}</h2>
+    <h3>{{ b.url }}</h3>
+    <h5>{{ b.created_at }}</h5>
+  {% endfor %}
+</body>
+</html>
