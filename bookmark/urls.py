@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path('', views.BookmarkList.as_view()),
-    path('<int:pk>/', views.single_list_page),
+    path('<int:pk>/', views.BookmarkDetail.as_view()),
 ]
