@@ -6,6 +6,7 @@ class Bookmark(models.Model):
   url = models.URLField(max_length=120)
   
   head_image = models.ImageField(upload_to='bookmark/images/%Y/%m/%d/', blank=True)
+  file_upload = models.FileField(upload_to='bookmark/files/%Y/%m/%d/', blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   
