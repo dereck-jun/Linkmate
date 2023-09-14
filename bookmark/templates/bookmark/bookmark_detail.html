@@ -1,11 +1,16 @@
 {% extends 'bookmark/base.html' %}
 
 {% block head_title %}
-  {{ post.title }}
+  {{ bookmark.title }}
 {% endblock %}
 
 {% block main_area %}
   <div id="post-area">
+  {% if bookmark.category %}
+    <span class="badge badge-secondary float-right">{{ bookmark.category }}</span>
+  {% else %}
+    <span class="badge badge-secondary float-right">미분류</span>
+  {% endif %}
     <!-- Title -->
     <h1 class="mt-4">{{ bookmark.title }}</h1>
 

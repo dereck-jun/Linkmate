@@ -16,3 +16,10 @@ class BookmarkList(ListView):
   
 class BookmarkDetail(DetailView):
   model = Bookmark
+  
+  def get_context_data(self, **kwargs):
+    context = super(BookmarkDetail, self).get_context_data()
+    context['categories'] = Category.objects.all()
+    context['no_category_post_count'] = Bookmark.objects.filter(category=None).count()
+    
+    return context
