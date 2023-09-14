@@ -5,13 +5,18 @@
     {% if bookmark_list.exists %}
       {% for b in bookmark_list %}
       <!-- Blog Post -->
-      <div class="card mb-4">
+      <div class="card mb-4" id="post-{{ b.pk }}">
         {% if b.head_image %}
           <img class="card-img-top" src="{{ b.head_image.url }}" alt="{{ p }} head_image">
         {% else %}
           <img class="card-img-top" src="https://picsum.photos/seed/{{ b.id }}/800/200" alt="random_image">
         {% endif %}
           <div class="card-body">
+            {% if b.category %}
+              <span class="badge badge-secondary float-right">{{ p.category }}</span>
+            {% else %}
+              <span class="badge badge-secondary float-right">미분류</span>
+            {% endif %}
             <h2 class="card-title">{{ b.title }}</h2>
             <p class="card-text">{{ b.url }}</p>
             <a href="{{ b.get_absolute_url }}" class="btn btn-primary">Read More &rarr;</a>

@@ -1,13 +1,16 @@
 from django.test import TestCase, Client
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
-from .models import Bookmark
+from .models import Bookmark, Category
 # Create your tests here.
 class TestView(TestCase):
   def setUp(self):
     self.client = Client()
     self.user_trump = User.objects.create_user(username='trump', password='somepassword')
     self.user_obama = User.objects.create_user(username='obama', password='somepassword')
+    
+    self.category_programming = Category.objects.create(name='programming', slug='programming')
+    self.category_music = Category.objects.create(name='music', slug='music')
     
     
   def navbar_test(self, soup):
@@ -44,11 +47,18 @@ class TestView(TestCase):
     bookmark_001 = Bookmark.objects.create(
       title="네이버",
       url='www.naver.com',
+      category=self.category_programming,
       author=self.user_trump
     )
     bookmark_002 = Bookmark.objects.create(
       title="구글",
       url='www.google.com',
+      category=self.category_music,
+      author=self.user_obama
+    )
+    bookmark_003 = Bookmark.objects.create(
+      title="다음",
+      url='www.daum.net',
       author=self.user_obama
     )
     
@@ -67,3 +77,10 @@ class TestView(TestCase):
     self.assertIn(self.user_trump.username.upper(), main_area.text)
     self.assertIn(self.user_obama.username.upper(), main_area.text)
     
+    def category_card_test(self, soup):
+      categories_card = soup.find('div', id='categories-card')
+      self.assertIn('Categories', categories_card.text)
+      self.assertIn(f'{self.category_programming.name} ({self.category_programming.bookmark_set.count()})', categories_card.text)
+      self.assertIn(f'{self.category_music.name} ({self.category_music.bookmark_set.count()})', categories_card.text)
+      self.assertIn(f'미분류 (1)', categories_card.text)
+      
