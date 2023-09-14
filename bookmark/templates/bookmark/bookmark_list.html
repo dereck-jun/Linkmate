@@ -18,7 +18,7 @@
           </div>
           <div class="card-footer text-muted">
             Posted on {{ b.created_at }}
-            <a href="#">Start Bootstrap</a>
+            <a href="#">{{ b.author | upper }}</a>
           </div>
       </div>
       {% endfor %}
