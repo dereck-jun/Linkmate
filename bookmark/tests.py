@@ -6,21 +6,41 @@ class TestView(TestCase):
   def setUp(self):
     self.client = Client()
     
-  def test_bookmark_list(self):
-    # 1. 북마크 목록 페이지를 가져온다
+  def navbar_test(self, soup):
+    navbar = soup.nav
+    self.assertIn('Bookmark', navbar.text)
+    self.assertIn('My Page ', navbar.text)
+    
+    logo_btn = navbar.find('a', text='Do It Django')
+    self.assertEqual(logo_btn.attrs['href'], '/')
+    
+    home_btn = navbar.find('a', text='Home')
+    self.assertEqual(home_btn.attrs['href'], '/')
+    
+    bookmark_btn = navbar.find('a', text='Bookmark')
+    self.assertEqual(bookmark_btn.attrs['href'], '/bookmark/')
+    
+    mypage_btn = navbar.find('a', text='My Page')
+    self.assertEqual(mypage_btn.attrs['href'], '/mypage/')
+    
+  def test_post_list(self):
     res = self.client.get('/bookmark/')
+    self.assertEqual(res.status_code, 200)
     
-    # 2. 정상적으로 페이지가 로드된다
-    self.assertEquals(res.status_code, 200)
-    
-    # 3. 페이지 타이틀은 'Linkmate' 이다
     soup = BeautifulSoup(res.content, 'html.parser')
+    
     self.assertEqual(soup.title.text, 'Linkmate')
     
-    # 4. navbar가 있다
-    navbar = soup.nav
+    self.navbar_test(soup)
     
-    # 5. My page, Search 라는 문구가 navbar 안에 있다.
-    self.assertIn('My Page', navbar.text)
-    self.assertIn('Search', navbar.text)
+  def test_post_detail(self):
+    bookmark_000 = Bookmark.objects.create(
+      title="네이버",
+      url='www.naver.com',
+    )
+    self.assertEqual(bookmark_000.get_absolute_url(), '/bookmark/1/')
+    res = self.client.get(bookmark_000.get_absolute_url())
+    self.assertEqual(res.status_code, 200)
+    soup = BeautifulSoup(res.content, 'html.parser')
     
+    self.navbar_test(soup)
