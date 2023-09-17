@@ -40,6 +40,15 @@
   <div id="comment-area">
     <!-- Post Content -->
     <p>{{ bookmark.url }}</p>
+    {% if bookmark.tags.exists %}
+      <i class="fas fa-tags"></i>
+      {% for tag in bookmark.tags.all %}
+        <a href="{{ tag.get_absolute_url }}" class="badge text-bg-info">{{ tag }}</a>
+      {% endfor %}
+      <br/>
+      <br/>
+    {% endif %}
+
     {% if bookmark.file_upload %}
       <a href="{{ bookmark.file_upload.url }}" class="btn btn-outline-dark" role="button" download>
         Download:

@@ -1,4 +1,4 @@
-from .models import Bookmark, Category
+from .models import Bookmark, Category, Tag
 from django.views.generic import ListView, DetailView
 from django.shortcuts import render
 # Create your views here.
@@ -27,7 +27,18 @@ def category_page(request, slug):
     'no_category_bookmark_count': Bookmark.objects.filter(category=None).count(),
     'category': category,
   })
+
+def tag_page(request, slug):
+  tag = Tag.objects.get(slug=slug)
+  bookmark_list = tag.bookmark_set.all()
   
+  return render(request, 'bookmark/bookmark_list.html', {
+    'bookmark_list': bookmark_list,
+    'tag': tag,
+    'categories': Category.objects.all(),
+    'no_category_bookmark_count': Bookmark.objects.filter(category=None).count(),
+    })
+
   
 class BookmarkDetail(DetailView):
   model = Bookmark
