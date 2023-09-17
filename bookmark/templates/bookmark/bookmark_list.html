@@ -1,7 +1,12 @@
 {% extends 'bookmark/base.html' %}
 
 {% block main_area %}
-  <h1>Linkmate</h1>
+  <h1>
+    Linkmate
+    {% if category %}
+      <span class="badge text-bg-primary">{{ category }}</span>
+    {% endif %}
+  </h1>
     {% if bookmark_list.exists %}
       {% for b in bookmark_list %}
       <!-- Blog Post -->
