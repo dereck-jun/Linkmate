@@ -1,7 +1,15 @@
 {% extends 'bookmark/base.html' %}
 
 {% block main_area %}
-  <h1>Linkmate</h1>
+  <h1>
+    Linkmate
+    {% if category %}
+      <span class="badge text-bg-primary">{{ category }}</span>
+    {% endif %}
+    {% if tag %}
+      <span class="badge text-bg-info"><i class="fas fa-tags"></i> {{ tag }} ({{ tag.bookmark_set.count }})</span>
+    {% endif %}
+  </h1>
     {% if bookmark_list.exists %}
       {% for b in bookmark_list %}
       <!-- Blog Post -->
@@ -19,6 +27,14 @@
             {% endif %}
             <h2 class="card-title">{{ b.title }}</h2>
             <p class="card-text">{{ b.url }}</p>
+            {% if b.tags.exists %}
+              <i class="fas fa-tags"></i>
+              {% for tag in b.tags.iterator %}
+                <a href="{{ tag.get_absolute_url }}"><span class="badge text-bg-info">{{ tag }}</span></a>
+              {% endfor %}
+              <br/>
+              <br/>
+            {% endif %}
             <a href="{{ b.get_absolute_url }}" class="btn btn-primary">Read More &rarr;</a>
           </div>
           <div class="card-footer text-muted">
