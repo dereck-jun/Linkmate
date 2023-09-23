@@ -7,5 +7,6 @@ urlpatterns = [
     path('category/<str:slug>/', views.category_page),
     path('tag/<str:slug>/', views.tag_page),
     path('create_bookmark/', views.BookmarkCreate.as_view()),
+    path('update_bookmark/<int:pk>/', views.BookmarkUpdate.as_view()),
 ]
 

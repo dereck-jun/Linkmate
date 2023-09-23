@@ -1,7 +1,8 @@
 from .models import Bookmark, Category, Tag
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
+from django.core.exceptions import PermissionDenied
 # Create your views here.
 
 class BookmarkCreate(LoginRequiredMixin, UserPassesTestMixin ,CreateView):
@@ -68,3 +69,14 @@ class BookmarkDetail(DetailView):
     return context
   
   
+class BookmarkUpdate(LoginRequiredMixin, UpdateView):
+  model = Bookmark
+  fields = ['title', 'url', 'head_image', 'file_upload', 'category', 'tags']
+  
+  template_name = 'bookmark/bookmark_update_form.html'
+  
+  def dispatch(self, request, *args, **kwargs):
+    if request.user.is_authenticated and request.user == self.get_object().author:
+      return super(BookmarkUpdate, self).dispatch(request, *args, **kwargs)
+    else:
+      raise PermissionDenied
