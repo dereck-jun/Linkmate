@@ -6,6 +6,6 @@ urlpatterns = [
     path('<int:pk>/', views.BookmarkDetail.as_view()),
     path('category/<str:slug>/', views.category_page),
     path('tag/<str:slug>/', views.tag_page),
-    path('create_post/', views.BookmarkCreate.as_view()),
+    path('create_bookmark/', views.BookmarkCreate.as_view()),
 ]
 
