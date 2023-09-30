@@ -8,5 +8,6 @@ urlpatterns = [
     path('tag/<str:slug>/', views.tag_page),
     path('create_bookmark/', views.BookmarkCreate.as_view()),
     path('update_bookmark/<int:pk>/', views.BookmarkUpdate.as_view()),
+    path('search/<str:q>/', views.BookmarkSearch.as_view(), name='bookmark_search'),
 ]
 

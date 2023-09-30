@@ -8,8 +8,8 @@
       </a>
     {% endif %}
   {% endif %}
-  <h1>
-    Linkmate
+  <h1>Linkmate
+    {% if search_info %}<small class="text-muted">{{ search_info }}</small>{% endif %}
     {% if category %}
       <span class="badge text-bg-primary">{{ category }}</span>
     {% endif %}
