@@ -2,11 +2,9 @@
 
 {% block main_area %}
   {% if user.is_authenticated %}
-    {% if user.is_superuser or user.is_staff %}
       <a href="/bookmark/create_bookmark/" class="btn btn-info btn-sm float-right" role="button">
         <i class="fas fa-pen"></i>&nbsp;&nbsp;New Bookmark
       </a>
-    {% endif %}
   {% endif %}
   <h1>Linkmate
     {% if search_info %}<small class="text-muted">{{ search_info }}</small>{% endif %}
@@ -19,7 +17,7 @@
   </h1>
     {% if bookmark_list.exists %}
       {% for b in bookmark_list %}
-      <!-- Blog Post -->
+      <!-- Bookmark -->
       <div class="card mb-4" id="post-{{ b.pk }}">
         {% if b.head_image %}
           <img class="card-img-top" src="{{ b.head_image.url }}" alt="{{ p }} head_image">

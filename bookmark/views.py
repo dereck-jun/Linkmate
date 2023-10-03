@@ -1,52 +1,65 @@
 from .models import Bookmark, Category, Tag
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
 from django.db.models import Q
 # Create your views here.
 
-class BookmarkCreate(LoginRequiredMixin, UserPassesTestMixin ,CreateView):
+class BookmarkCreate(LoginRequiredMixin, CreateView):
   model = Bookmark
-  fields = ['title', 'url', 'head_image', 'file_upload', 'category']
-  
-  def test_func(self):
-    return self.request.user.is_superuser or self.request.user.is_staff
+  fields = ['title', 'url', 'head_image', 'category']
   
   def form_valid(self, form):
-    current_user = self.request.user
-    if current_user.is_authenticated and (current_user.is_staff or current_user.is_superuser):
-      form.instance.author = current_user
-      response = super(BookmarkCreate, self).form_valid(form)
+    # 현재 로그인한 사용자를 북마크의 저자로 설정
+    form.instance.author = self.request.user
+    
+    # 기본 form_valid 메서드 실행
+    response = super().form_valid(form)
+    
+    # 태그 입력 처리
+    tags_str = self.request.POST.get('tags_str')
+    if tags_str:
+      tags_str = tags_str.strip()  # 공백 제거
+      tags_list = tags_str.split()  # 공백을 기준으로 태그 목록 분리
       
-      tags_str = self.request.POST.get('tags_str')
-      if tags_str:
-        tags_str = tags_str.strip()
-        
-        tags_str = tags_str.replace(',', ';')
-        tags_list = tags_str.split(';')
-        
-        for t in tags_list:
-          t = t.strip()
-          tag, is_tag_created = Tag.objects.get_or_create(name=t)
-          if is_tag_created:
-            tag.slug = slugify(t, allow_unicode=True)
-            tag.save()
-          self.object.tags.add(tag)
-      return response
-    else:
-      return redirect('/bookmark/')
+      for t in tags_list:
+        t = t.strip()  # 각 태그의 양쪽 공백 제거
+        tag, is_tag_created = Tag.objects.get_or_create(name=t)
+        if is_tag_created:
+          tag.slug = slugify(t, allow_unicode=True)  # 태그 이름을 기반으로 슬러그 생성
+          tag.save()
+        self.object.tags.add(tag)  # 북마크와 태그 연결
+    
+    return response
+
 
 class BookmarkList(ListView):
   model = Bookmark
   ordering = "title"
   paginate_by = 5
   
+  def get_queryset(self):
+    # 로그인한 사용자의 북마크만 가져오도록 쿼리셋 수정
+    if self.request.user.is_authenticated:
+      return Bookmark.objects.filter(author=self.request.user)
+    else:
+      # 비로그인 사용자의 경우 빈 쿼리셋 반환
+      return Bookmark.objects.none()
+  
   def get_context_data(self, *, object_list=None, **kwargs):
-    context = super(BookmarkList, self).get_context_data()
+    context = super().get_context_data()
     context['categories'] = Category.objects.all()
-    context['no_category_post_count'] = Bookmark.objects.filter(category=None).count()
+    
+    if self.request.user.is_authenticated:
+      # 로그인한 경우 카테고리 및 미분류 포스트 개수 계산
+      context['no_category_post_count'] = Bookmark.objects.filter(
+        author=self.request.user, category=None
+      ).count()
+    else:
+      # 비로그인 사용자의 경우 미분류 포스트 개수 계산 불가능
+      context['no_category_post_count'] = None
     
     return context
   
@@ -90,9 +103,15 @@ class BookmarkDetail(DetailView):
   
 class BookmarkUpdate(LoginRequiredMixin, UpdateView):
   model = Bookmark
-  fields = ['title', 'url', 'head_image', 'file_upload', 'category', 'tags']
-  
+  fields = ['title', 'url', 'head_image', 'category', 'tags']
   template_name = 'bookmark/bookmark_update_form.html'
+  
+  def dispatch(self, request, *args, **kwargs):
+    bookmark = get_object_or_404(Bookmark, pk=kwargs['pk'])
+    if request.user.is_authenticated and request.user == bookmark.author:
+      return super(BookmarkUpdate, self).dispatch(request, *args, **kwargs)
+    else:
+      raise PermissionDenied
   
   def get_context_data(self, **kwargs):
     context = super(BookmarkUpdate, self).get_context_data()
@@ -133,7 +152,14 @@ class BookmarkUpdate(LoginRequiredMixin, UpdateView):
       return super(BookmarkUpdate, self).dispatch(request, *args, **kwargs)
     else:
       raise PermissionDenied
-
+  
+class BookmarkDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+  model = Bookmark
+  success_url = '/success/url/'  # 북마크가 성공적으로 삭제된 후 리다이렉트할 URL 설정
+  
+  def test_func(self):
+    bookmark = self.get_object()
+    return self.request.user == bookmark.author
 
 class BookmarkSearch(BookmarkList):
   paginate_by = None
