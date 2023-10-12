@@ -1,4 +1,4 @@
-from .models import Bookmark, Category, Tag
+from .models import Bookmark, Tag
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,7 +9,8 @@ from django.db.models import Q
 
 class BookmarkCreate(LoginRequiredMixin, CreateView):
   model = Bookmark
-  fields = ['title', 'url', 'head_image', 'category']
+  # fields = ['title', 'url', 'head_image', 'category']
+  fields = ['title', 'url', 'head_image', 'tags']
   
   def form_valid(self, form):
     # 현재 로그인한 사용자를 북마크의 저자로 설정
@@ -50,33 +51,33 @@ class BookmarkList(ListView):
   
   def get_context_data(self, *, object_list=None, **kwargs):
     context = super().get_context_data()
-    context['categories'] = Category.objects.all()
+    context['tags'] = Tag.objects.all()
     
     if self.request.user.is_authenticated:
       # 로그인한 경우 카테고리 및 미분류 포스트 개수 계산
-      context['no_category_post_count'] = Bookmark.objects.filter(
-        author=self.request.user, category=None
+      context['no_tags_bookmark_count'] = Bookmark.objects.filter(
+        author=self.request.user, tags=None
       ).count()
     else:
       # 비로그인 사용자의 경우 미분류 포스트 개수 계산 불가능
-      context['no_category_post_count'] = None
+      context['no_tags_bookmark_count'] = None
     
     return context
   
-def category_page(request, slug):
-  if slug == 'no_category':
-    category = '미분류'
-    bookmark_list = Bookmark.objects.filter(category=None)
-  else:
-    category = Category.objects.get(slug=slug)
-    bookmark_list = Bookmark.objects.filter(category=category)
-  
-  return render(request, 'bookmark/bookmark_list.html', {
-    'bookmark_list': bookmark_list,
-    'categories': Category.objects.all(),
-    'no_category_bookmark_count': Bookmark.objects.filter(category=None).count(),
-    'category': category,
-  })
+# def category_page(request, slug):
+#   if slug == 'no_category':
+#     category = '미분류'
+#     bookmark_list = Bookmark.objects.filter(category=None)
+#   else:
+#     category = Category.objects.get(slug=slug)
+#     bookmark_list = Bookmark.objects.filter(category=category)
+#
+#   return render(request, 'bookmark/bookmark_list.html', {
+#     'bookmark_list': bookmark_list,
+#     'categories': Category.objects.all(),
+#     'no_category_bookmark_count': Bookmark.objects.filter(category=None).count(),
+#     'category': category,
+#   })
 
 def tag_page(request, slug):
   tag = Tag.objects.get(slug=slug)
@@ -85,8 +86,8 @@ def tag_page(request, slug):
   return render(request, 'bookmark/bookmark_list.html', {
     'bookmark_list': bookmark_list,
     'tag': tag,
-    'categories': Category.objects.all(),
-    'no_category_bookmark_count': Bookmark.objects.filter(category=None).count(),
+    # 'categories': Category.objects.all(),
+    'no_tags_bookmark_count': Bookmark.objects.filter(tags=None).count(),
     })
 
   
@@ -95,15 +96,16 @@ class BookmarkDetail(DetailView):
   
   def get_context_data(self, **kwargs):
     context = super(BookmarkDetail, self).get_context_data()
-    context['categories'] = Category.objects.all()
-    context['no_category_post_count'] = Bookmark.objects.filter(category=None).count()
+    context['tags'] = Tag.objects.all()
+    context['no_tags_bookmark_count'] = Bookmark.objects.filter(tags=None).count()
     
     return context
   
   
 class BookmarkUpdate(LoginRequiredMixin, UpdateView):
   model = Bookmark
-  fields = ['title', 'url', 'head_image', 'category', 'tags']
+  # fields = ['title', 'url', 'head_image', 'category', 'tags']
+  fields = ['title', 'url', 'head_image', 'tags']
   template_name = 'bookmark/bookmark_update_form.html'
   
   def dispatch(self, request, *args, **kwargs):
