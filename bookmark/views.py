@@ -63,30 +63,14 @@ class BookmarkList(ListView):
       context['no_tags_bookmark_count'] = None
     
     return context
-  
-# def category_page(request, slug):
-#   if slug == 'no_category':
-#     category = '미분류'
-#     bookmark_list = Bookmark.objects.filter(category=None)
-#   else:
-#     category = Category.objects.get(slug=slug)
-#     bookmark_list = Bookmark.objects.filter(category=category)
-#
-#   return render(request, 'bookmark/bookmark_list.html', {
-#     'bookmark_list': bookmark_list,
-#     'categories': Category.objects.all(),
-#     'no_category_bookmark_count': Bookmark.objects.filter(category=None).count(),
-#     'category': category,
-#   })
 
 def tag_page(request, slug):
   tag = Tag.objects.get(slug=slug)
-  bookmark_list = tag.bookmark_set.all()
+  bookmark_list = tag.bookmark_set.filter(author=request.user)
   
   return render(request, 'bookmark/bookmark_list.html', {
     'bookmark_list': bookmark_list,
     'tag': tag,
-    # 'categories': Category.objects.all(),
     'no_tags_bookmark_count': Bookmark.objects.filter(tags=None).count(),
     })
 
@@ -104,7 +88,6 @@ class BookmarkDetail(DetailView):
   
 class BookmarkUpdate(LoginRequiredMixin, UpdateView):
   model = Bookmark
-  # fields = ['title', 'url', 'head_image', 'category', 'tags']
   fields = ['title', 'url', 'head_image', 'tags']
   template_name = 'bookmark/bookmark_update_form.html'
   
@@ -157,7 +140,8 @@ class BookmarkUpdate(LoginRequiredMixin, UpdateView):
   
 class BookmarkDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
   model = Bookmark
-  success_url = '/success/url/'  # 북마크가 성공적으로 삭제된 후 리다이렉트할 URL 설정
+  success_url = '/bookmark/'  # 북마크가 성공적으로 삭제된 후 리다이렉트할 URL 설정
+  template_name = 'bookmark/bookmark_delete.html'
   
   def test_func(self):
     bookmark = self.get_object()
