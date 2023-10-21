@@ -1,4 +1,5 @@
 from .models import Bookmark, Tag
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect, get_object_or_404
@@ -164,3 +165,10 @@ class BookmarkSearch(BookmarkList):
     
     return context
   
+class ManageTags(View):
+  template_name = 'bookmark/manage_tags.html'
+  
+  def get(self, request, *args, **kwargs):
+    user_tags = Tag.objects.filter(author=request.user)
+    
+    return render(request, self.template_name, {'user_tags': user_tags})

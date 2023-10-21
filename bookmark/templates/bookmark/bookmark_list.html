@@ -30,7 +30,7 @@
             {% if b.tags.exists %}
               <i class="fas fa-tags"></i>
               {% for tag in b.tags.iterator %}
-                <a href="{{ tag.get_absolute_url }}"><span class="badge text-bg-info">{{ tag }}</span></a>
+                <a href="{{ tag.get_absolute_url }}"><span class="badge text-bg-info">{{ tag.slug }}</span></a>
               {% endfor %}
               <br/>
               <br/>
