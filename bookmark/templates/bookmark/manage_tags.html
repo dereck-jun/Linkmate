@@ -3,7 +3,11 @@
 {% block main_area %}
   <h1>태그 관리</h1>
 
+  <hr/>
+
   <!-- 사용자의 태그 목록 표시 -->
+  <h3>태그 리스트</h3>
+  <a href='{% url 'tag_create' %}' class="btn btn-primary">태그 생성</a>
   <ul>
     {% for tag in user_tags %}
       <li>{{ tag.name }}</li>

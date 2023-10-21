@@ -1,8 +1,8 @@
 from .models import Bookmark, Tag
-from django.views import View
+from .forms import TagForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
 from django.db.models import Q
@@ -165,10 +165,25 @@ class BookmarkSearch(BookmarkList):
     
     return context
   
-class ManageTags(View):
+class ManageTags(ListView):
+  model = Tag
+  context_object_name = 'tags'
   template_name = 'bookmark/manage_tags.html'
   
   def get(self, request, *args, **kwargs):
     user_tags = Tag.objects.filter(author=request.user)
     
     return render(request, self.template_name, {'user_tags': user_tags})
+  
+  
+class TagCreate(CreateView):
+  model = Tag
+  form_class = TagForm
+  template_name = 'bookmark/tag_form.html'
+  success_url = '/bookmark/manage_tags/'
+  
+  def form_valid(self, form):
+    form.instance.author = self.request.user
+    
+    return super().form_valid(form)
+  

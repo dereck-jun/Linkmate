@@ -13,3 +13,10 @@ class BookmarkForm(forms.ModelForm):
   def __init__(self, user, *args, **kwargs):
     super(BookmarkForm, self).__init__(*args, **kwargs)
     self.fields['tags'].queryset = Tag.objects.filter(author=user)
+
+
+class TagForm(forms.ModelForm):
+  class Meta:
+    model = Tag
+    fields = ['name']
+

@@ -1,0 +1,10 @@
+{% extends 'bookmark/base_full_width.html' %}
+
+{% block main_area %}
+  <h1>태그 생성</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">태그 생성</button>
+  </form>
+{% endblock %}
