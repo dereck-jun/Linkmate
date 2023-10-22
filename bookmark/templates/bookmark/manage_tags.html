@@ -10,7 +10,9 @@
   <a href='{% url 'tag_create' %}' class="btn btn-primary">태그 생성</a>
   <ul>
     {% for tag in user_tags %}
-      <li>{{ tag.name }}</li>
+      <li>
+        <a href="{% url 'tag_detail' slug=tag.slug %}">{{ tag.name }}</a>
+      </li>
     {% empty %}
       <li>아직 태그가 없습니다.</li>
     {% endfor %}

@@ -18,7 +18,7 @@ class Tag(models.Model):
     super(Tag, self).save(*args, **kwargs)
   
   def __str__(self):
-    return f'[{self.pk}]{self.name} :: {self.author}'
+    return f'{self.name}'
   
   def get_absolute_url(self):
     return f'/bookmark/tag/{self.slug}/'

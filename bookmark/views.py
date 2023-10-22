@@ -72,7 +72,7 @@ def tag_page(request, slug):
   return render(request, 'bookmark/bookmark_list.html', {
     'bookmark_list': bookmark_list,
     'tag': tag,
-    'no_tags_bookmark_count': Bookmark.objects.filter(tags=None).count(),
+    # 'no_tags_bookmark_count': Bookmark.objects.filter(tags=None).count(),
     })
 
   
@@ -186,4 +186,28 @@ class TagCreate(CreateView):
     form.instance.author = self.request.user
     
     return super().form_valid(form)
+  
+  
+class TagDetail(DetailView):
+  model = Tag
+  
+  def get_context_data(self, **kwargs):
+    # context = super(TagDetail, self).get_context_data()
+    # context['tags'] = Tag.objects.all()
+    # context['no_tags_bookmark_count'] = Bookmark.objects.filter(tags=None).count()
+    # print(len(bookmarks_with_tag))
+    
+    context = super(TagDetail, self).get_context_data(**kwargs)
+    tag = self.get_object()
+    bookmarks_with_tag = Bookmark.objects.filter(tags=tag)
+    context['bookmarks_with_tag'] = bookmarks_with_tag
+    context['tags'] = Tag.objects.all()
+    context['no_tags_bookmark_count'] = Bookmark.objects.filter(tags=None).count()
+    
+    return context
+  
+class TagDelete(DeleteView):
+  model = Tag
+  template_name = 'bookmark/tag_delete.html'
+  success_url = '/bookmark/manage_tags/'
   
