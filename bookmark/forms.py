@@ -20,7 +20,11 @@ class TagChoiceField(forms.ModelMultipleChoiceField):
 #     self.fields['tags'].queryset = Tag.objects.filter(author=user)
 
 class BookmarkCreateForm(forms.ModelForm):
-  tags = forms.ModelMultipleChoiceField(queryset=Tag.objects.none(), widget=forms.CheckboxSelectMultiple)
+  tags = forms.ModelMultipleChoiceField(
+    queryset=Tag.objects.none(),
+    widget=forms.CheckboxSelectMultiple,
+    required=False
+  )
   
   class Meta:
     model = Bookmark
@@ -32,7 +36,11 @@ class BookmarkCreateForm(forms.ModelForm):
 
 
 class BookmarkUpdateForm(forms.ModelForm):
-  tags = forms.ModelMultipleChoiceField(queryset=Tag.objects.none(), widget=forms.CheckboxSelectMultiple)
+  tags = forms.ModelMultipleChoiceField(
+    queryset=Tag.objects.none(),
+    widget=forms.CheckboxSelectMultiple,
+    required=False
+  )
 
   class Meta:
     model = Bookmark

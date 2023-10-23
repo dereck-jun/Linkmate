@@ -10,6 +10,7 @@ from django.db.models import Q
 class BookmarkCreate(CreateView):
   model = Bookmark
   form_class = BookmarkCreateForm
+  success_url = '/bookmark/'
   
   def get_form_kwargs(self):
     kwargs = super(BookmarkCreate, self).get_form_kwargs()
