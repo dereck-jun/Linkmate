@@ -23,13 +23,13 @@ class BookmarkCreate(CreateView):
 
 class BookmarkList(ListView):
   model = Bookmark
-  ordering = "title"
+  ordering = ['title']
   paginate_by = 5
   
   def get_queryset(self):
     # 로그인한 사용자의 북마크만 가져오도록 쿼리셋 수정
     if self.request.user.is_authenticated:
-      return Bookmark.objects.filter(author=self.request.user)
+      return Bookmark.objects.filter(author=self.request.user).order_by('title')
     else:
       # 비로그인 사용자의 경우 빈 쿼리셋 반환
       return Bookmark.objects.none()
@@ -98,12 +98,13 @@ class BookmarkDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     return self.request.user == bookmark.author
 
 class BookmarkSearch(BookmarkList):
-  paginate_by = None
+  paginate_by = 5
   
   def get_queryset(self):
     q = self.kwargs['q']
     bookmark_list = Bookmark.objects.filter(
-      Q(title__contains=q) | Q(tags__name__contains=q)
+      Q(title__contains=q) | Q(tags__name__contains=q),
+      author=self.request.user
     ).distinct()
     return bookmark_list
   
@@ -139,16 +140,6 @@ class TagCreate(CreateView):
   
 class TagDetail(DetailView):
   model = Tag
-  
-  # def get_context_data(self, **kwargs):
-  #   context = super(TagDetail, self).get_context_data(**kwargs)
-  #   tag = self.get_object()
-  #   bookmarks_with_tag = Bookmark.objects.filter(tags=tag)
-  #   context['bookmarks_with_tag'] = bookmarks_with_tag
-  #   context['tags'] = Tag.objects.all()
-  #   context['no_tags_bookmark_count'] = Bookmark.objects.filter(tags=None).count()
-  #
-  #   return context
   
   def get_context_data(self, **kwargs):
     context = super(TagDetail, self).get_context_data(**kwargs)
