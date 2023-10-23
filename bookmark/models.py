@@ -6,7 +6,7 @@ import os
 
 # Create your models here.
 class Tag(models.Model):
-  name = models.CharField(max_length=50, unique=True)
+  name = models.CharField(max_length=50) #, unique=True)
   slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
   author = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)  # 사용자와 연결
   
@@ -18,7 +18,7 @@ class Tag(models.Model):
     super(Tag, self).save(*args, **kwargs)
   
   def __str__(self):
-    return f'{self.name}'
+    return self.name
   
   def get_absolute_url(self):
     return f'/bookmark/tag/{self.slug}/'

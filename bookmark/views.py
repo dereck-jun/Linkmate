@@ -1,5 +1,5 @@
 from .models import Bookmark, Tag
-from .forms import TagForm
+from .forms import TagForm, BookmarkForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404
@@ -10,31 +10,41 @@ from django.db.models import Q
 
 class BookmarkCreate(LoginRequiredMixin, CreateView):
   model = Bookmark
-  # fields = ['title', 'url', 'head_image', 'category']
-  fields = ['title', 'url', 'head_image', 'tags']
+  form_class = BookmarkForm
+  # fields = ['title', 'url', 'head_image', 'tags']
   
+  def get_form_kwargs(self):
+    kwargs = super(BookmarkCreate, self).get_form_kwargs()
+    kwargs['user'] = self.request.user  # 현재 로그인한 사용자 전달
+    return kwargs
+
+
   def form_valid(self, form):
-    # 현재 로그인한 사용자를 북마크의 저자로 설정
     form.instance.author = self.request.user
-    
-    # 기본 form_valid 메서드 실행
-    response = super().form_valid(form)
-    
-    # 태그 입력 처리
-    tags_str = self.request.POST.get('tags_str')
-    if tags_str:
-      tags_str = tags_str.strip()  # 공백 제거
-      tags_list = tags_str.split()  # 공백을 기준으로 태그 목록 분리
-      
-      for t in tags_list:
-        t = t.strip()  # 각 태그의 양쪽 공백 제거
-        tag, is_tag_created = Tag.objects.get_or_create(name=t)
-        if is_tag_created:
-          tag.slug = slugify(t, allow_unicode=True)  # 태그 이름을 기반으로 슬러그 생성
-          tag.save()
-        self.object.tags.add(tag)  # 북마크와 태그 연결
-    
-    return response
+    return super().form_valid(form)
+  
+  # def form_valid(self, form):
+  #   # 현재 로그인한 사용자를 북마크의 저자로 설정
+  #   form.instance.author = self.request.user
+  #
+  #   # 기본 form_valid 메서드 실행
+  #   response = super().form_valid(form)
+  #
+  #   # 태그 입력 처리
+  #   tags = self.request.POST.get('tags')  # 'tags' 필드를 사용하여 태그 가져오기
+  #   if tags:
+  #     tags = tags.strip()  # 공백 제거
+  #     tags_list = tags.split()  # 공백을 기준으로 태그 목록 분리
+  #
+  #     for t in tags_list:
+  #       t = t.strip()  # 각 태그의 양쪽 공백 제거
+  #       tag, is_tag_created = Tag.objects.get_or_create(name=t)
+  #       if is_tag_created:
+  #         tag.slug = slugify(t, allow_unicode=True)  # 태그 이름을 기반으로 슬러그 생성
+  #         tag.save()
+  #       self.object.tags.add(tag)  # 북마크와 태그 연결
+  #
+  #   return response
 
 
 class BookmarkList(ListView):
@@ -191,20 +201,23 @@ class TagCreate(CreateView):
 class TagDetail(DetailView):
   model = Tag
   
+  # def get_context_data(self, **kwargs):
+  #   context = super(TagDetail, self).get_context_data(**kwargs)
+  #   tag = self.get_object()
+  #   bookmarks_with_tag = Bookmark.objects.filter(tags=tag)
+  #   context['bookmarks_with_tag'] = bookmarks_with_tag
+  #   context['tags'] = Tag.objects.all()
+  #   context['no_tags_bookmark_count'] = Bookmark.objects.filter(tags=None).count()
+  #
+  #   return context
+  
   def get_context_data(self, **kwargs):
-    # context = super(TagDetail, self).get_context_data()
-    # context['tags'] = Tag.objects.all()
-    # context['no_tags_bookmark_count'] = Bookmark.objects.filter(tags=None).count()
-    # print(len(bookmarks_with_tag))
-    
     context = super(TagDetail, self).get_context_data(**kwargs)
-    tag = self.get_object()
-    bookmarks_with_tag = Bookmark.objects.filter(tags=tag)
-    context['bookmarks_with_tag'] = bookmarks_with_tag
-    context['tags'] = Tag.objects.all()
-    context['no_tags_bookmark_count'] = Bookmark.objects.filter(tags=None).count()
-    
+    tag = get_object_or_404(Tag, slug=self.kwargs['slug'], author=self.request.user)
+    # 로그인한 사용자의 북마크에서만 해당 태그와 연결된 북마크 가져오기
+    context['bookmarks_with_tag'] = Bookmark.objects.filter(tags=tag, author=self.request.user)
     return context
+  
   
 class TagDelete(DeleteView):
   model = Tag
