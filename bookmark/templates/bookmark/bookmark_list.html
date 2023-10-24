@@ -1,0 +1,119 @@
+{% extends 'bookmark/base.html' %}
+{% load static %}
+
+{% block main_area %}
+  {% if user.is_authenticated %}
+      <a href="/bookmark/create_bookmark/" class="btn btn-info btn-sm float-right" role="button">
+        <i class="fas fa-pen"></i>&nbsp;&nbsp;북마크 생성
+      </a>
+  {% endif %}
+  <h2>&nbsp;
+    {% if search_info %}<small class="text-muted">{{ search_info }}</small>{% endif %}
+    {% if tag %}
+      <span class="badge text-bg-info"><i class="fas fa-tags"></i> {{ tag }} ({{ tag.bookmark_set.count }})</span>
+    {% endif %}
+  </h2>
+    {% if bookmark_list.exists %}
+      {% for b in bookmark_list %}
+      <!-- Bookmark -->
+      <div class="card mb-4" id="post-{{ b.pk }}">
+        {% if b.head_image %}
+          <img class="card-img-top" src="{{ b.head_image.url }}" alt="{{ p }} head_image">
+        {% endif %}
+          <div class="card-body">
+            <h2 class="card-title">{{ b.title }}</h2>
+            <a href="{{ b.url }}"><p class="card-text">{{ b.url }}</p></a>
+            {% if b.tags.exists %}
+              <i class="fas fa-tags"></i>
+              {% for tag in b.tags.iterator %}
+                <a href="{{ tag.get_absolute_url }}"><span class="badge text-bg-info">{{ tag.slug }}</span></a>
+              {% endfor %}
+              <br/>
+              <br/>
+            {% endif %}
+            <br />
+            <a href="{{ b.get_absolute_url }}" class="btn btn-primary">Read More &rarr;</a>
+          </div>
+          <div class="card-footer text-muted">
+            Posted on {{ b.created_at }} &nbsp;
+            {% if user == b.author %}
+              <a href="{% url 'delete_bookmark' pk=b.id %}" class="btn btn-danger btn-sm float-right">Delete</a>
+            {% endif %}
+          </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="card mb-4" id="no-bookmarks-message">
+        <div class="card-body">
+          <h3>아직 생성한 북마크가 없습니다</h3>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <ul class="pagination justify-content-center mb-4">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1">first</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&larr;</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" href="#">맨 앞</a>
+        </li>
+        <li class="page-item disabled">
+          <a class="page-link" href="#">&larr;</a>
+        </li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">&rarr;</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">맨 뒤</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" href="#">&rarr;</a>
+        </li>
+        <li class="page-item disabled">
+          <a class="page-link" href="#">last</a>
+        </li>
+      {% endif %}
+      </ul>
+    {% endif %}
+
+    <script>
+      // JavaScript to show/hide the "No bookmarks" message
+      function toggleNoBookmarksMessage() {
+          const noBookmarksMessage = document.getElementById('no-bookmarks-message');
+          const mainArea = document.getElementById('main-area');
+
+          // Check if the main area has content
+          if (mainArea.innerHTML.trim() === '') {
+              noBookmarksMessage.style.display = 'block'; // Show the message
+          } else {
+              noBookmarksMessage.style.display = 'none'; // Hide the message
+          }
+      }
+
+      // Call the function when the page loads and when content changes
+      window.addEventListener('load', toggleNoBookmarksMessage);
+    </script>
+  {% endblock %}

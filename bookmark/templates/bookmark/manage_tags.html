@@ -1,0 +1,40 @@
+{% extends 'bookmark/base_full_width.html' %}
+
+{% block main_area %}
+  <h1>태그 관리</h1>
+
+  <hr/>
+
+  <!-- 사용자의 태그 목록 표시 -->
+  <h3>태그 리스트</h3>
+  <a href='{% url 'tag_create' %}' class="btn btn-primary">태그 생성</a>
+  <ul>
+    {% for tag in user_tags %}
+      <li>
+        <a href="{% url 'tag_detail' slug=tag.slug %}">{{ tag.name }}</a>
+      </li>
+    {% empty %}
+      <li>아직 태그가 없습니다.</li>
+    {% endfor %}
+  </ul>
+
+{#  <!-- 새로운 태그 추가 폼 -->#}
+{#  <form method="post" action="{% url 'your_add_tag_view' %}">#}
+{#    {% csrf_token %}#}
+{#    <label for="id_tag_name">새로운 태그 추가:</label>#}
+{#    <input type="text" id="id_tag_name" name="tag_name">#}
+{#    <button type="submit">추가</button>#}
+{#  </form>#}
+{##}
+{#  <!-- 기존 태그 삭제 폼 -->#}
+{#  <form method="post" action="{% url 'your_remove_tag_view' %}">#}
+{#    {% csrf_token %}#}
+{#    <label for="id_remove_tag">기존 태그 삭제:</label>#}
+{#    <select id="id_remove_tag" name="tag_id">#}
+{#      {% for tag in user_tags %}#}
+{#        <option value="{{ tag.id }}">{{ tag.name }}</option>#}
+{#      {% endfor %}#}
+{#    </select>#}
+{#    <button type="submit">삭제</button>#}
+{#  </form>#}
+{% endblock %}

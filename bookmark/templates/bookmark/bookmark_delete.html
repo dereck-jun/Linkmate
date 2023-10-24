@@ -1,0 +1,10 @@
+{% extends 'bookmark/base_full_width.html' %}
+
+{% block main_area %}
+  <h1>북마크 삭제</h1>
+  <p>이 북마크를 정말로 삭제하시겠습니까?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">삭제 확인</button>
+  </form>
+{% endblock %}

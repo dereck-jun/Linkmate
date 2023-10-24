@@ -1,0 +1,52 @@
+{% extends 'bookmark/base.html' %}
+
+{% block head_title %}
+  {{ bookmark.title }}
+{% endblock %}
+
+{% block main_area %}
+  <div id="post-area">
+  {% if bookmark.category %}
+    <span class="badge badge-secondary float-right">{{ bookmark.category }}</span>
+  {% else %}
+    <span class="badge badge-secondary float-right">미분류</span>
+  {% endif %}
+    <!-- Title -->
+    <h1 class="mt-4">{{ bookmark.title }}</h1>
+
+    <hr>
+
+  {% if user.is_authenticated and user == bookmark.author %}
+    <a class="btn btn-info btn-sm float-right" href="/bookmark/update_bookmark/{{ bookmark.pk }}/" role="button">
+      <i class="fas fa-pen"></i>&nbsp;&nbsp;북마크 수정
+    </a>
+  {% endif %}
+
+  <!-- Date/Time -->
+    <p>Posted on {{ bookmark.created_at }}</p>
+
+    <!-- Preview Image -->
+    {% if bookmark.head_image %}
+      <hr>
+      <img class="img-fluid rounded" src="{{ bookmark.head_image.url }}" alt="{{ bookmark.title }} head_image">
+    {% endif %}
+
+    <hr>
+  </div>
+
+  <div id="comment-area">
+    <!-- Post Content -->
+    <a href="{{ bookmark.url }}"><p>{{ bookmark.url }}</p></a>
+    {% if bookmark.tags.exists %}
+      <i class="fas fa-tags"></i>
+      {% for tag in bookmark.tags.all %}
+        <a href="{{ tag.get_absolute_url }}" class="badge text-bg-info">{{ tag.name }}</a>
+      {% endfor %}
+      <br/>
+      <br/>
+    {% endif %}
+
+    <hr>
+
+  </div>
+{% endblock %}

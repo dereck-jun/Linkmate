@@ -1,0 +1,19 @@
+{% extends 'bookmark/base_full_width.html' %}
+
+{% block main_area %}
+  <h1>{{ tag.name }}</h1>
+
+  <h3>이 태그가 사용된 북마크</h3>
+  <ul>
+    {% for bookmark in bookmarks_with_tag %}
+      <li><a href="{% url 'tag_detail' slug=bookmark.slug %}">{{ bookmark.title }}</a></li>
+    {% empty %}
+      <li>이 태그가 사용된 북마크가 없습니다.</li>
+    {% endfor %}
+  </ul>
+
+  <form method="post" action="{% url 'tag_delete' slug=tag.slug %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">태그 삭제</button>
+  </form>
+{% endblock %}
