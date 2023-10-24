@@ -1,4 +1,5 @@
 {% extends 'bookmark/base.html' %}
+{% load static %}
 
 {% block main_area %}
   {% if user.is_authenticated %}
@@ -42,7 +43,11 @@
       </div>
       {% endfor %}
     {% else %}
-      <h3>아직 생성한 북마크가 없습니다</h3>
+      <div class="card mb-4" id="no-bookmarks-message">
+        <div class="card-body">
+          <h3>아직 생성한 북마크가 없습니다</h3>
+        </div>
+      </div>
     {% endif %}
 
     <!-- Pagination -->
@@ -93,5 +98,22 @@
       {% endif %}
       </ul>
     {% endif %}
+    <script>
+      // JavaScript to show/hide the "No bookmarks" message
+      function toggleNoBookmarksMessage() {
+          const noBookmarksMessage = document.getElementById('no-bookmarks-message');
+          const mainArea = document.getElementById('main-area');
 
-{% endblock %}
+          // Check if the main area has content
+          if (mainArea.innerHTML.trim() === '') {
+              noBookmarksMessage.style.display = 'block'; // Show the message
+          } else {
+              noBookmarksMessage.style.display = 'none'; // Hide the message
+          }
+      }
+
+      // Call the function when the page loads and when content changes
+      window.addEventListener('load', toggleNoBookmarksMessage);
+    </script>
+  {% endblock %}
+

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -11,3 +12,31 @@
   <h1>안녕하세요</h1>
 </body>
 </html>
+=======
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to BMARK</title>
+    <link href="{% static '/bookmark/css/landing.css' %}" rel="stylesheet" media="screen">
+</head>
+<body>
+    <header>
+        <h1>Welcome to <span class="highlight">BMARK</span></h1>
+        <p>북마크를 더 스마트하게</p>
+    </header>
+
+    <section class="cta">
+        <h2>Get Started</h2>
+        <a href="/bookmark/templates/bookmark/register.html">Sign Up</a>
+        <a href="/bookmark/templates/bookmark/login.html">Log In</a>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 BMARK. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+>>>>>>> 97bb2f5fb85de5eaa5278e6113e7ff7362336cfe

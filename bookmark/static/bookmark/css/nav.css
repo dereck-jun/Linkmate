@@ -1,0 +1,59 @@
+/* Navbar 스타일 */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #f7f7f7;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 왼쪽에 위치한 로고와 링크 그룹 스타일 */
+.left-links {
+    display: flex;
+    align-items: center;
+}
+
+/* Navbar 로고 스타일 */
+.logo {
+    font-size: 24px;
+    color: rgb(128, 128, 128);
+    text-align: center;
+    text-decoration: none;
+}
+
+/* 로고 이미지 스타일 */
+.logo-image {
+    width: 20px; /* 이미지 너비 조정 */
+    height: auto; /* 이미지 높이 자동 조정 */
+    margin-left: 50px;
+}
+
+/* Navbar 링크 스타일 */
+.navbar a {
+    font-size: 16px;
+    color: rgb(128, 128, 128);
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Log In 링크 스타일 */
+.login-link {
+    color: rgb(128, 128, 128);
+    text-decoration: none;
+    padding: 14px 0;
+    margin-right: 60px;
+}
+
+/* Navbar 링크 호버 스타일 */
+.navbar a:hover {
+    /* background-color: #333; */
+    color: #000; /* 호버 시 글자 색을 검정색으로 변경 */
+}
+
+/* body 마진 제거 */
+body {
+    margin: 0;
+}
