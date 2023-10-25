@@ -154,4 +154,13 @@ class TagDelete(DeleteView):
   model = Tag
   template_name = 'bookmark/tag_delete.html'
   success_url = '/bookmark/manage_tags/'
-  
+
+
+def logout_page(request):
+  return render(request, 'accounts/logout.html')
+
+def login_page(request):
+  return render(request, 'accounts/login.html')
+
+def register_page(request):
+  return render(request, 'accounts/register.html')
