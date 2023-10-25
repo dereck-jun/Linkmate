@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>편의성을 높이기 위한 북마크, LinkMate로 시작하세요!</title>
-</head>
-<body>
-  <nav>
-    <a href="/bookmark/">Bookmark</a>
-  </nav>
-  <h1>안녕하세요</h1>
-</body>
-</html>
-=======
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -30,8 +15,8 @@
 
     <section class="cta">
         <h2>Get Started</h2>
-        <a href="/bookmark/templates/accounts/register.html">Sign Up</a>
-        <a href="/bookmark/templates/accounts/login.html">Log In</a>
+        <a href="{% url 'register' %}">Sign Up</a>
+        <a href="{% url 'login' %}">Log In</a>
     </section>
 
     <footer>
@@ -39,4 +24,3 @@
     </footer>
 </body>
 </html>
->>>>>>> 97bb2f5fb85de5eaa5278e6113e7ff7362336cfe

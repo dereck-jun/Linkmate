@@ -1,23 +1,12 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from .models import Bookmark, Tag
 
 class TagChoiceField(forms.ModelMultipleChoiceField):
   def label_from_instance(self, obj):
     return obj.name
 
-# class BookmarkForm(forms.ModelForm):
-#   tags = TagChoiceField(
-#     queryset=Tag.objects.none(),
-#     widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-#     required=False
-#   )
-#   class Meta:
-#     model = Bookmark
-#     fields = ['title', 'url', 'head_image', 'tags']
-#
-#   def __init__(self, user, *args, **kwargs):
-#     super(BookmarkForm, self).__init__(*args, **kwargs)
-#     self.fields['tags'].queryset = Tag.objects.filter(author=user)
 
 class BookmarkCreateForm(forms.ModelForm):
   tags = forms.ModelMultipleChoiceField(
@@ -58,7 +47,10 @@ class TagForm(forms.ModelForm):
     fields = ['name']
   
   
-  
+class CustomUserCreationForm(UserCreationForm):
+  class Meta:
+    model = User
+    fields = ['username', "email", 'password1', 'password2']
   
   
   

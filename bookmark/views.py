@@ -1,8 +1,9 @@
 from .models import Bookmark, Tag
-from .forms import TagForm, BookmarkUpdateForm, BookmarkCreateForm
+from django.contrib.auth import login
+from .forms import TagForm, BookmarkUpdateForm, BookmarkCreateForm, CustomUserCreationForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 # Create your views here.
@@ -162,5 +163,16 @@ def logout_page(request):
 def login_page(request):
   return render(request, 'accounts/login.html')
 
+
 def register_page(request):
-  return render(request, 'accounts/register.html')
+  if request.method == 'POST':
+    form = CustomUserCreationForm(request.POST)
+    if form.is_valid():
+      user = form.save(commit=False)  # 데이터베이스에 바로 저장하지 않고 인스턴스를 먼저 생성
+      user.save()  # 데이터베이스에 저장
+      login(request, user)
+      return redirect('/bookmark/')
+  else:
+    form = CustomUserCreationForm()
+  
+  return render(request, 'accounts/register.html', {'form': form})
