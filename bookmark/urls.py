@@ -13,9 +13,9 @@ urlpatterns = [
     path('tags/create/', views.TagCreate.as_view(), name='tag_create'),
     path('tags/detail/<str:slug>/', views.TagDetail.as_view(), name='tag_detail'),
     path('tags/delete/<str:slug>/', views.TagDelete.as_view(), name='tag_delete'),
-    path('accounts/logout/',views.logout_page, name='logout'),
-    path('accounts/login/',views.login_page, name='login'),
-    path('accounts/register/',views.register_page, name='register'),
+    path('account/logout/', views.logout_page, name='logout'),
+    path('account/login/', views.login_page, name='login'),
+    path('account/register/', views.register_page, name='register'),
     
 ]
 

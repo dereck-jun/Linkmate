@@ -158,10 +158,14 @@ class TagDelete(DeleteView):
 
 
 def logout_page(request):
-  return render(request, 'accounts/logout.html')
+  return render(request, 'account/logout.html')
 
 def login_page(request):
-  return render(request, 'accounts/login.html')
+  # 이미 로그인된 사용자인지 확인
+  if request.user.is_authenticated:
+    return redirect('/bookmark/')  # 이미 로그인된 경우, /bookmark/로 리디렉션
+  
+  return render(request, 'account/login.html')  # 로그인 페이지를 보여줄 경우, 해당 템플릿을 렌더링
 
 
 def register_page(request):
@@ -175,4 +179,4 @@ def register_page(request):
   else:
     form = CustomUserCreationForm()
   
-  return render(request, 'accounts/register.html', {'form': form})
+  return render(request, 'account/register.html', {'form': form})

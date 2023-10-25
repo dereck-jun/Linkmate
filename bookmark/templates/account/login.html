@@ -1,3 +1,4 @@
+{% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,24 +81,19 @@
 <body>
     <div class="container">
         <h2>로그인</h2>
-        <form>
-            <label for="username">아이디</label>
-            <input type="text" id="username" name="username" required>
-
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password" required>
-
-            <div class="options">
-                <div class="remember-me">
-                    <input type="checkbox" id="remember" name="remember">
-                    <label for="remember">아이디 저장</label>
-                </div>
-                <a href="#">비밀번호 찾기</a>
-            </div>
-
+        <form method="post">
+          {% csrf_token %}
+            {{ form.as_table }}
             <button type="submit">로그인</button>
             <p>계정이 없으신가요? <a href="{% url 'register' %}">회원가입 하기</a></p>
         </form>
+      {% block socialaccount_form %}
+      {% providers_media_js %}
+        <div class="social-login">
+          <h2>소셜 로그인</h2>
+          <a role="button" href="{% provider_login_url 'google' %}" class="btn btn-outline-dark btn-block btn-sm"><i class="fab fa-google"></i>&nbsp;&nbsp; Log in with Google</a>{{ provider.name }}
+        </div>
+      {% endblock %}
     </div>
 </body>
 </html>
