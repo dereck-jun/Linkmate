@@ -1,13 +1,11 @@
 from .models import Bookmark, Tag
-from django.contrib.auth import login
-from .forms import TagForm, BookmarkUpdateForm, BookmarkCreateForm, CustomUserCreationForm
+from .forms import TagForm, BookmarkUpdateForm, BookmarkCreateForm, CustomUserCreationForm, CustomLoginForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.contrib.auth import login
-from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 
 
