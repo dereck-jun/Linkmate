@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django_extensions',
+    'bookmark',
+    'pages',
     'crispy_forms',
     'crispy_bootstrap4',
     'django.contrib.sites',
@@ -49,8 +50,6 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'bookmark',
-    'pages',
 ]
 
 MIDDLEWARE = [

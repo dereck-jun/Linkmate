@@ -1,182 +1,197 @@
 from .models import Bookmark, Tag
 from django.contrib.auth import login
-from .forms import TagForm, BookmarkUpdateForm, BookmarkCreateForm, CustomUserCreationForm
+from .forms import TagForm, BookmarkUpdateForm, BookmarkCreateForm, CustomUserCreationForm, CustomLoginForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.contrib.auth import login
+from django.contrib.auth.views import LoginView
+from django.shortcuts import render, redirect
+
+
 # Create your views here.
 
 class BookmarkCreate(CreateView):
-  model = Bookmark
-  form_class = BookmarkCreateForm
-  success_url = '/bookmark/'
-  
-  def get_form_kwargs(self):
-    kwargs = super(BookmarkCreate, self).get_form_kwargs()
-    kwargs['user'] = self.request.user  # user 인자를 폼으로 전달
-    return kwargs
-  
-  def form_valid(self, form):
-    form.instance.author = self.request.user
-    return super(BookmarkCreate, self).form_valid(form)
+    model = Bookmark
+    form_class = BookmarkCreateForm
+    success_url = '/bookmark/'
+
+    def get_form_kwargs(self):
+        kwargs = super(BookmarkCreate, self).get_form_kwargs()
+        kwargs['user'] = self.request.user  # user 인자를 폼으로 전달
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(BookmarkCreate, self).form_valid(form)
 
 
 class BookmarkList(ListView):
-  model = Bookmark
-  ordering = ['title']
-  paginate_by = 5
-  
-  def get_queryset(self):
-    # 로그인한 사용자의 북마크만 가져오도록 쿼리셋 수정
-    if self.request.user.is_authenticated:
-      return Bookmark.objects.filter(author=self.request.user).order_by('title')
-    else:
-      # 비로그인 사용자의 경우 빈 쿼리셋 반환
-      return Bookmark.objects.none()
-  
-  def get_context_data(self, *, object_list=None, **kwargs):
-    context = super().get_context_data()
-    context['tags'] = Tag.objects.all()
-    
-    if self.request.user.is_authenticated:
-      # 로그인한 경우 카테고리 및 미분류 포스트 개수 계산
-      context['no_tags_bookmark_count'] = Bookmark.objects.filter(
-        author=self.request.user, tags=None
-      ).count()
-    else:
-      # 비로그인 사용자의 경우 미분류 포스트 개수 계산 불가능
-      context['no_tags_bookmark_count'] = None
-    
-    return context
+    model = Bookmark
+    ordering = ['title']
+    paginate_by = 5
+
+    def get_queryset(self):
+        # 로그인한 사용자의 북마크만 가져오도록 쿼리셋 수정
+        if self.request.user.is_authenticated:
+            return Bookmark.objects.filter(author=self.request.user).order_by('title')
+        else:
+            # 비로그인 사용자의 경우 빈 쿼리셋 반환
+            return Bookmark.objects.none()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['tags'] = Tag.objects.all()
+
+        if self.request.user.is_authenticated:
+            # 로그인한 경우 카테고리 및 미분류 포스트 개수 계산
+            context['no_tags_bookmark_count'] = Bookmark.objects.filter(
+                author=self.request.user, tags=None
+            ).count()
+        else:
+            # 비로그인 사용자의 경우 미분류 포스트 개수 계산 불가능
+            context['no_tags_bookmark_count'] = None
+
+        return context
+
 
 def tag_page(request, slug):
-  tag = Tag.objects.get(slug=slug)
-  bookmark_list = tag.bookmark_set.filter(author=request.user)
-  
-  return render(request, 'bookmark/bookmark_list.html', {
-    'bookmark_list': bookmark_list,
-    'tag': tag,
+    tag = Tag.objects.get(slug=slug)
+    bookmark_list = tag.bookmark_set.filter(author=request.user)
+
+    return render(request, 'bookmark/bookmark_list.html', {
+        'bookmark_list': bookmark_list,
+        'tag': tag,
     })
 
-  
+
 class BookmarkDetail(DetailView):
-  model = Bookmark
-  
-  def get_context_data(self, **kwargs):
-    context = super(BookmarkDetail, self).get_context_data()
-    context['tags'] = Tag.objects.all()
-    context['no_tags_bookmark_count'] = Bookmark.objects.filter(tags=None).count()
-    
-    return context
-  
+    model = Bookmark
+
+    def get_context_data(self, **kwargs):
+        context = super(BookmarkDetail, self).get_context_data()
+        context['tags'] = Tag.objects.all()
+        context['no_tags_bookmark_count'] = Bookmark.objects.filter(tags=None).count()
+
+        return context
+
 
 class BookmarkUpdate(UpdateView):
-  model = Bookmark
-  form_class = BookmarkUpdateForm
-  
-  def get_form_kwargs(self):
-    kwargs = super(BookmarkUpdate, self).get_form_kwargs()
-    kwargs['user'] = self.request.user  # user 인자를 폼으로 전달
-    return kwargs
-  
-  def dispatch(self, request, *args, **kwargs):
-    bookmark = get_object_or_404(Bookmark, pk=kwargs['pk'])
-    if request.user.is_authenticated and request.user == bookmark.author:
-      return super(BookmarkUpdate, self).dispatch(request, *args, **kwargs)
-    else:
-      raise PermissionDenied
+    model = Bookmark
+    form_class = BookmarkUpdateForm
+
+    def get_form_kwargs(self):
+        kwargs = super(BookmarkUpdate, self).get_form_kwargs()
+        kwargs['user'] = self.request.user  # user 인자를 폼으로 전달
+        return kwargs
+
+    def dispatch(self, request, *args, **kwargs):
+        bookmark = get_object_or_404(Bookmark, pk=kwargs['pk'])
+        if request.user.is_authenticated and request.user == bookmark.author:
+            return super(BookmarkUpdate, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
 
-  
 class BookmarkDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-  model = Bookmark
-  success_url = '/bookmark/'  # 북마크가 성공적으로 삭제된 후 리다이렉트할 URL 설정
-  template_name = 'bookmark/bookmark_delete.html'
-  
-  def test_func(self):
-    bookmark = self.get_object()
-    return self.request.user == bookmark.author
+    model = Bookmark
+    success_url = '/bookmark/'  # 북마크가 성공적으로 삭제된 후 리다이렉트할 URL 설정
+    template_name = 'bookmark/bookmark_delete.html'
+
+    def test_func(self):
+        bookmark = self.get_object()
+        return self.request.user == bookmark.author
+
 
 class BookmarkSearch(BookmarkList):
-  paginate_by = 5
-  
-  def get_queryset(self):
-    q = self.kwargs['q']
-    bookmark_list = Bookmark.objects.filter(
-      Q(title__contains=q) | Q(tags__name__contains=q),
-      author=self.request.user
-    ).distinct()
-    return bookmark_list
-  
-  def get_context_data(self, **kwargs):
-    context = super(BookmarkSearch, self).get_context_data()
-    q = self.kwargs['q']
-    context['search_info'] = f'Search: {q} ({self.get_queryset().count()})'
-    
-    return context
-  
+    paginate_by = 5
+
+    def get_queryset(self):
+        q = self.kwargs['q']
+        bookmark_list = Bookmark.objects.filter(
+            Q(title__contains=q) | Q(tags__name__contains=q),
+            author=self.request.user
+        ).distinct()
+        return bookmark_list
+
+    def get_context_data(self, **kwargs):
+        context = super(BookmarkSearch, self).get_context_data()
+        q = self.kwargs['q']
+        context['search_info'] = f'Search: {q} ({self.get_queryset().count()})'
+
+        return context
+
+
 class ManageTags(ListView):
-  model = Tag
-  context_object_name = 'tags'
-  template_name = 'bookmark/manage_tags.html'
-  
-  def get(self, request, *args, **kwargs):
-    user_tags = Tag.objects.filter(author=request.user)
-    
-    return render(request, self.template_name, {'user_tags': user_tags})
-  
-  
+    model = Tag
+    context_object_name = 'tags'
+    template_name = 'bookmark/manage_tags.html'
+
+    def get(self, request, *args, **kwargs):
+        user_tags = Tag.objects.filter(author=request.user)
+
+        return render(request, self.template_name, {'user_tags': user_tags})
+
+
 class TagCreate(CreateView):
-  model = Tag
-  form_class = TagForm
-  template_name = 'bookmark/tag_form.html'
-  success_url = '/bookmark/manage_tags/'
-  
-  def form_valid(self, form):
-    form.instance.author = self.request.user
-    
-    return super().form_valid(form)
-  
-  
+    model = Tag
+    form_class = TagForm
+    template_name = 'bookmark/tag_form.html'
+    success_url = '/bookmark/manage_tags/'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+
+        return super().form_valid(form)
+
+
 class TagDetail(DetailView):
-  model = Tag
-  
-  def get_context_data(self, **kwargs):
-    context = super(TagDetail, self).get_context_data(**kwargs)
-    tag = get_object_or_404(Tag, slug=self.kwargs['slug'], author=self.request.user)
-    # 로그인한 사용자의 북마크에서만 해당 태그와 연결된 북마크 가져오기
-    context['bookmarks_with_tag'] = Bookmark.objects.filter(tags=tag, author=self.request.user)
-    return context
-  
-  
+    model = Tag
+
+    def get_context_data(self, **kwargs):
+        context = super(TagDetail, self).get_context_data(**kwargs)
+        tag = get_object_or_404(Tag, slug=self.kwargs['slug'], author=self.request.user)
+        # 로그인한 사용자의 북마크에서만 해당 태그와 연결된 북마크 가져오기
+        context['bookmarks_with_tag'] = Bookmark.objects.filter(tags=tag, author=self.request.user)
+        return context
+
+
 class TagDelete(DeleteView):
-  model = Tag
-  template_name = 'bookmark/tag_delete.html'
-  success_url = '/bookmark/manage_tags/'
+    model = Tag
+    template_name = 'bookmark/tag_delete.html'
+    success_url = '/bookmark/manage_tags/'
 
 
 def logout_page(request):
-  return render(request, 'account/logout.html')
+    return render(request, 'account/logout.html')
 
-def login_page(request):
-  # 이미 로그인된 사용자인지 확인
-  if request.user.is_authenticated:
-    return redirect('/bookmark/')  # 이미 로그인된 경우, /bookmark/로 리디렉션
-  
-  return render(request, 'account/login.html')  # 로그인 페이지를 보여줄 경우, 해당 템플릿을 렌더링
+
+def custom_login_view(request):
+    if request.method == 'POST':
+        form = CustomLoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            # 로그인 성공 페이지 또는 사용자 프로필 페이지로 리디렉션합니다.
+            return redirect('/bookmark/')  # 'success_url_name'을 원하는 URL 이름으로 대체하세요.
+
+    else:
+        form = CustomLoginForm()
+
+    return render(request, 'account/login.html', {'form': form})
 
 
 def register_page(request):
-  if request.method == 'POST':
-    form = CustomUserCreationForm(request.POST)
-    if form.is_valid():
-      user = form.save(commit=False)  # 데이터베이스에 바로 저장하지 않고 인스턴스를 먼저 생성
-      user.save()  # 데이터베이스에 저장
-      login(request, user)
-      return redirect('/bookmark/')
-  else:
-    form = CustomUserCreationForm()
-  
-  return render(request, 'account/register.html', {'form': form})
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)  # 데이터베이스에 바로 저장하지 않고 인스턴스를 먼저 생성
+            user.save()  # 데이터베이스에 저장
+            login(request, user)
+            return redirect('/bookmark/')
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'account/register.html', {'form': form})

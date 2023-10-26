@@ -1,3 +1,4 @@
+
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f4f4f4;
@@ -54,7 +55,8 @@ input[type="checkbox"] {
     margin-right: 5px;
 }
 
-button {
+.login {
+    margin-top: 10px;
     background-color: #007BFF;
     color: #fff;
     padding: 10px;
@@ -65,4 +67,14 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+.social {
+    margin-top: 20px;
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
 }
