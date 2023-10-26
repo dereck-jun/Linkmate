@@ -8,19 +8,16 @@
     <link href="{% static '/bookmark/css/landing.css' %}" rel="stylesheet" media="screen">
 </head>
 <body>
-    <header>
-        <h1>Welcome to <span class="highlight">BMARK</span></h1>
-        <p>북마크를 더 스마트하게</p>
-    </header>
+<header>
+    <h1>Welcome to <span class="highlight">BMARK</span></h1>
+    <p>북마크를 더 스마트하게</p>
+</header>
 
-    <section class="cta">
-        <h2>Get Started</h2>
-        <a href="{% url 'register' %}">Sign Up</a>
-        <a href="{% url 'login' %}">Get Started</a>
-    </section>
-
-    <footer>
-        <p>&copy; 2023 BMARK. All rights reserved.</p>
-    </footer>
+<section class="cta">
+    <h2>Get Started</h2>
+    <a href="{% url 'register' %}">Sign Up</a>
+    <a href="{% url 'login' %}">Get Started</a>
+</section>
+{% include 'bookmark/footer.html' %}
 </body>
 </html>

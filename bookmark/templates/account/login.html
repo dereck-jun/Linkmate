@@ -1,3 +1,4 @@
+{% load static %}
 {% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
@@ -7,100 +8,28 @@
     <title>로그인</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            width: 80%;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label, input {
-            margin: 5px 0; /* 간격을 줄임 */
-        }
-
-        input[type="text"], input[type="password"] {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
-
-        .options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 10px 0;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-        }
-
-        input[type="checkbox"] {
-            margin-right: 5px;
-        }
-
-        button {
-            background-color: #007BFF;
-            color: #fff;
-            padding: 10px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <link href="{% static '/bookmark/css/login.css' %}" rel="stylesheet" media="screen">
 </head>
 <body>
-    <div class="container">
-        <h2>로그인</h2>
-        <form method="post">
-          {% csrf_token %}
-            <div class="form-group">
-              {{ form.username.label_tag }}
-              {{ form.username }}
-          </div>
-          <div class="form-group">
-              {{ form.password.label_tag }}
-              {{ form.password }}
-          </div>
-            <button type="submit">로그인</button>
-            <p>계정이 없으신가요? <a href="{% url 'register' %}">회원가입 하기</a></p>
-        </form>
-      {% block socialaccount_form %}
-      {% providers_media_js %}
+<div class="container">
+    <h2>로그인</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_table }}
+        <button type="submit" class="login">로그인</button>
+
+    </form>
+    {% block socialaccount_form %}
+        {% providers_media_js %}
         <div class="social-login">
-          <h2>소셜 로그인</h2>
-          <a role="button" href="{% provider_login_url 'google' %}" class="btn btn-outline-dark btn-block btn-sm"><i class="fab fa-google"></i>&nbsp;&nbsp; Log in with Google</a>{{ provider.name }}
+            <form method="get" action="{% provider_login_url 'google' %}">
+                <button type="submit" class="social">
+                    <i class="fab fa-google"></i>&nbsp;&nbsp; Google 로그인
+                </button>
+                <p>계정이 없으신가요? <a href="{% url 'register' %}">회원가입 하기</a></p>
+            </form>
         </div>
-      {% endblock %}
-    </div>
+    {% endblock %}
+</div>
 </body>
 </html>

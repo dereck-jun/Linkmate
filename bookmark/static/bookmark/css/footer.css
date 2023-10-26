@@ -1,0 +1,14 @@
+/* footer를 fixed로 설정하고 화면 하단에 고정 */
+footer {
+  text-align: center;
+  padding: 1rem 0;
+  background-color: #333;
+  color: #fff;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 100; /* 다른 요소 위에 표시되도록 z-index 설정 */
+}
+footer p {
+  font-size: 0.9rem;
+}

@@ -1,5 +1,12 @@
 from django.urls import path
 from . import views
+from .views import custom_login_view
+
+urlpatterns = [
+    # 다른 URL 패턴들
+    path('login/', custom_login_view, name='login'),
+]
+
 
 urlpatterns = [
     path('', views.BookmarkList.as_view(), name='bookmark_list'),
@@ -14,8 +21,9 @@ urlpatterns = [
     path('tags/detail/<str:slug>/', views.TagDetail.as_view(), name='tag_detail'),
     path('tags/delete/<str:slug>/', views.TagDelete.as_view(), name='tag_delete'),
     path('account/logout/', views.logout_page, name='logout'),
-    path('account/login/', views.login_page, name='login'),
+    path('account/login/', views.custom_login_view, name='login'),
     path('account/register/', views.register_page, name='register'),
-    
+
+
 ]
 

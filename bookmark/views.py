@@ -6,6 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.contrib.auth import login
+from django.contrib.auth.views import LoginView
+from django.shortcuts import render, redirect
+
+
 # Create your views here.
 
 class BookmarkCreate(CreateView):
@@ -160,13 +165,20 @@ class TagDelete(DeleteView):
 def logout_page(request):
   return render(request, 'account/logout.html')
 
-def login_page(request):
-  # 이미 로그인된 사용자인지 확인
-  if request.user.is_authenticated:
-    return redirect('/bookmark/')  # 이미 로그인된 경우, /bookmark/로 리디렉션
-  form = CustomUserCreationForm()
-  
-  return render(request, 'account/login.html')  # 로그인 페이지를 보여줄 경우, 해당 템플릿을 렌더링
+
+def custom_login_view(request):
+    if request.method == 'POST':
+        form = CustomLoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            # 로그인 성공 페이지 또는 사용자 프로필 페이지로 리디렉션합니다.
+            return redirect('/bookmark/')  # 'success_url_name'을 원하는 URL 이름으로 대체하세요.
+
+    else:
+        form = CustomLoginForm()
+
+    return render(request, 'account/login.html', {'form': form})
 
 
 def register_page(request):

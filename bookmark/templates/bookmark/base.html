@@ -5,6 +5,7 @@
     <title>{% block head_title %}Linkmate{% endblock %}</title>
     <link href="{% static '/bookmark/bootstrap/bootstrap.min.css' %}" rel="stylesheet" media="screen">
     <script src="https://kit.fontawesome.com/7b90dc3916.js" crossorigin="anonymous"></script>
+    <link href="{% static '/bookmark/css/footer.css' %}" rel="stylesheet" media="screen">
 </head>
 
 <body>
@@ -36,22 +37,22 @@
 {% include 'bookmark/footer.html' %}
 
 <script>
-  function searchPost() {
-    let searchValue = document.getElementById('search-input').value.trim();
-    if (searchValue.length > 0) {
-      location.href="/bookmark/search/" + searchValue + "/";
-    } else {
-      alert("검색어가 너무 짧습니다.");
+    function searchPost() {
+        let searchValue = document.getElementById('search-input').value.trim();
+        if (searchValue.length > 0) {
+            location.href = "/bookmark/search/" + searchValue + "/";
+        } else {
+            alert("검색어가 너무 짧습니다.");
+        }
     }
-  }
 
-  document.getElementById('search-input').addEventListener("keyup", function (e) {
-    if(e.key === "Enter") {
-      searchPost();
-    }
-  })
+    document.getElementById('search-input').addEventListener("keyup", function (e) {
+        if (e.key === "Enter") {
+            searchPost();
+        }
+    })
 </script>
-{% include 'bookmark/footer.html' %}
+{#{% include 'bookmark/footer.html' %}#}
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
         crossorigin="anonymous"></script>
