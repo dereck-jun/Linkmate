@@ -10,7 +10,7 @@ RUN mkdir /app
 WORKDIR /app
 
 # Install build dependencies and MySQL client library
-RUN apk add --no-cache mariadb-dev build-base
+RUN apk add --no-cache mariadb-dev build-base libffi-dev
 
 # Copy only the requirements file, and install dependencies
 COPY requirements.txt /app/
